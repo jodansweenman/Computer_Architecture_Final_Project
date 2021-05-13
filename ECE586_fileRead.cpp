@@ -9,7 +9,7 @@ using namespace std;
 class traceInstruction
 {
     // access
-    public:                                                  // may need changed later
+    public:                                                    // may need changed later
 
     // data members
     string trace;
@@ -28,18 +28,18 @@ int main(){
 
       string tp;
 
-      while(getline(newfile, tp)){                            //read data from file object and put it into trace.
+      while(getline(newfile, tp)){                            //read data from file object and put it into vector.
           tempTrace.push_back(tp);    
       }
 
       newfile.close();                                        //close the file object.
    }
 
-   traceInstruction inputInstruction[tempTrace.size()];
+   traceInstruction inputInstruction[tempTrace.size()];       //declare number of objects equal to number of trace inputs read
 
    int tempAddress = 0;
 
-   for(int i = 0; i < tempTrace.size(); i++)
+   for(int i = 0; i < tempTrace.size(); i++)                 //populate array of objects with vector
    {
         inputInstruction[i].trace = tempTrace.at(i);
         inputInstruction[i].address = tempAddress;
