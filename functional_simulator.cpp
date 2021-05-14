@@ -5,12 +5,13 @@
 
 // Functional simulator (Different action based on opcode)
 // Keeps track of register and memory state changes
+int Instruction_decoder::functional_simulator(void) {
 
-
-    switch(opcode) {
+    switch(cur_opcode) {
     // Arithmetic Instructions
-        case 000000: 
+        case "000000": 
         // ADD Rd Rs Rt (Add the contents of regs Rs and Rt, transfer result to reg Rd)
+            registers[reg_rd] = registers[reg_rs] + registers[reg_rt];
             break; 
         case 000001: 
         // ADDI Rt Rs Imm (Add the contents of reg Rs to the immediate value, transfer result to reg Rt)

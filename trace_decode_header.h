@@ -2,7 +2,9 @@
 #ifndef TRACE_DECODE_HEADER_H
 
 #define TRACE_DECODE_HEADER_H
-// This class defines an instruction. It stores different attributes of the function and has a decode function which can be used to decode different parts of the hexidecimal input
+
+// This class defines an instruction. It stores different attributes of the function and has a decode function which 
+// can be used to decode different parts of the hexidecimal input
 class Instruction_decoder
 {
 	public:
@@ -38,6 +40,7 @@ class Instruction_decoder
 		
 		Instruction_decoder(string);
 		int decode(void);
+        void functional_simulator(void);
 		
 
 };
