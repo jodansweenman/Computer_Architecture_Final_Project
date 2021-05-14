@@ -40,17 +40,29 @@ int main(){
       newfile.close();                                        //close the file object.
    }
 
-   traceInstruction inputInstruction[tempTrace.size()];       //declare number of objects equal to number of trace inputs read
+   // traceInstruction inputInstruction[tempTrace.size()];       //declare number of objects equal to number of trace inputs read
+
+   // int tempAddress = 0;
+
+   // for(int i = 0; i < tempTrace.size(); i++)                 //populate array of objects with vector
+   // {
+   //      inputInstruction[i].trace = tempTrace.at(i);
+   //      inputInstruction[i].address = tempAddress;
+   //      tempAddress += 4;
+   // }
 
    int tempAddress = 0;
 
+   Instruction_decoder decodedTrace[tempTrace.size()];
+
    for(int i = 0; i < tempTrace.size(); i++)                 //populate array of objects with vector
    {
-        inputInstruction[i].trace = tempTrace.at(i);
-        inputInstruction[i].trace = Instruction_decoder(inputInstruction[i].trace);
-        inputInstruction[i].address = tempAddress;
+        decodedTrace[i].Instruction_decoder(tempTrace.at(i));
+        decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
+        decodedTrace[i].decode;
    }
+}
 
 
 

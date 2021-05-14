@@ -1,0 +1,15 @@
+{
+  "debug.allowBreakpointsEverywhere": true,
+  "files.autoGuessEncoding": true,
+  "files.exclude": {
+    "**/.vscode": true,
+    "compile_commands.json": true,
+    "*.hrccproj": true,
+    "*.sln": true,
+    "*.suo": true
+  },
+  "C_Cpp_Runner.cCompilerPath": "C:\\MinGW\\bin\\gcc.exe",
+  "C_Cpp_Runner.cppCompilerPath": "C:\\MinGW\\bin\\g++.exe",
+  "C_Cpp_Runner.debuggerPath": "C:\\MinGW\\bin\\gdb.exe",
+  "C_Cpp_Runner.makePath": "C:\\Program Files (x86)\\GnuWin32\\bin\\make.exe"
+}
