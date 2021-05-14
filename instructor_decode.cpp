@@ -8,6 +8,7 @@
 * This file contains the source code for a class that defines an instruction.
 *
 ***************************************************************************************/
+#include "trace_decode_header.h"
 
 #include <map>
 #include <string>
@@ -17,45 +18,7 @@
 
 using namespace std;
 
-// This class defines an instruction. It stores different attributes of the function and has a decode function which can be used to decode different parts of the hexidecimal input
-class Instruction_decoder
-{
-	public:
-		string hex_inst;
-		map <string, string> opcode_dict = {{"000000","Add"},
-											{"000001","Addi"},
-											{"000010","Sub"},
-											{"000011","Subi"},
-											{"000100","Mul"},
-											{"000101","Muli"},
-											{"000110","Or"},
-											{"000111","Ori"},
-											{"001000","And"},
-											{"001001","Andi"},
-											{"001010","Xor"},
-											{"001011","Xori"},
-											{"001100","LDW"},
-											{"001101","STW"},
-											{"001110","Bz"},
-											{"001111","Beq"},
-											{"010000","Jr"},
-											{"010001","Halt"},
-		};
-		string r_type[6] = {"Add", "Sub", "Mul", "Or", "And", "Xor"};
-		
-		string cur_opcode = "111111";
-		int reg_rs = 0;
-		int reg_rt = 0;
-		int reg_rd = 0;
-		int immediate = 0;
-		int x_addr = 0;
-		string type = "U";
-		
-		Instruction_decoder(string);
-		int decode(void);
-		
 
-};
 
 // This function works as a class constructor that takes in the hexidecimal input
 Instruction_decoder::Instruction_decoder(string hex)
