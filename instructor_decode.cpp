@@ -18,16 +18,34 @@
 
 using namespace std;
 
-
+map <string, string> opcode_dict = {{"000000","Add"},
+											{"000001","Addi"},
+											{"000010","Sub"},
+											{"000011","Subi"},
+											{"000100","Mul"},
+											{"000101","Muli"},
+											{"000110","Or"},
+											{"000111","Ori"},
+											{"001000","And"},
+											{"001001","Andi"},
+											{"001010","Xor"},
+											{"001011","Xori"},
+											{"001100","LDW"},
+											{"001101","STW"},
+											{"001110","Bz"},
+											{"001111","Beq"},
+											{"010000","Jr"},
+											{"010001","Halt"},
+		};
 
 // This function works as a class constructor that takes in the hexidecimal input
-Instruction_decoder::Instruction_decoder(string hex)
+Instruction_decoder::Instruction_decoder(void)
 {
-	hex_inst = hex;
+	//hex_inst = hex;
 }
 
 // This function decodes the hex input
-int Instruction_decoder::decode(void) {
+int Instruction_decoder::decode(string hex_inst) {
 //	if (!hex_inst) {
 //		return 1;
 //	} 

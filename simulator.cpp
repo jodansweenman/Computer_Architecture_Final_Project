@@ -3,6 +3,11 @@
 // Created by: Michael Ruehle, Tiffani Shilts, Anusha Sistla, 
 // Josiah Sweeney, and Brett Thornhill
 
+// Simple example to test
+// 00000000011000100010000000100000
+// Above instruction is add r4, r3, r2
+// Load r2 = 2 and r3 = 3. Should get r4 = 5 at the end
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -13,14 +18,8 @@
 using namespace std;
 
 uint32_t pc;        // Program counter
-unint32_t registers[32]; // General purpose registers R1 - R31
-
-//uint32_t r1 = 0, r2 = 0, r3 = 0, r4 =0, r5 = 0, r6 = 0, r7 = 0, r8 =0, r9 = 0,
-//         r10 = 0, r11 = 0, r12 = 0, r13 = 0, r14 = 0, r15 = 0, r16 = 0, r17 = 0, r18 = 0, r19 = 0,
-//         r20 = 0, r21 = 0, r22 = 0, r23 = 0, r24 = 0, r25 = 0, r26 = 0, r27 = 0, r28 = 0, r29 = 0,
-//         r30 = 0, r31 = 0;    
-
-
+uint32_t registers[32]; // General purpose registers R0 - R31
+ 
 int main(){
    
    // Read in all the instructions in from a file
@@ -52,6 +51,10 @@ int main(){
    //      tempAddress += 4;
    // }
 
+   // For testing. Loading registers R2 and R3
+   registers[2] = 2;
+   registers[3] = 3;
+
     // Transfer read in file into an array of all instructions
    int tempAddress = 0;
    Instruction_decoder decodedTrace[tempTrace.size()];
@@ -59,19 +62,15 @@ int main(){
     // decodedTrace will be populated with decoded instructions and instruction will be executed
    for(int i = 0; i < tempTrace.size(); i++)               
    {
-        decodedTrace[i].Instruction_decoder(tempTrace.at(i));
+        decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
-        decodedTrace[i].decode();
-        decodedTrace[i].functional_simulator();
+        decodedTrace[i].functional_simulator(registers);
    }
 
-}
-
-
-
-
-
-
+   for(int i = 0; i < 32; i++)
+   {
+      printf("Register %d = %d \n", i, registers[i]);
+   }
 
 }

@@ -1,3 +1,7 @@
+#include <string>
+#include <map>
+
+using namespace std;
 
 #ifndef TRACE_DECODE_HEADER_H
 
@@ -9,25 +13,7 @@ class Instruction_decoder
 {
 	public:
 		string hex_inst;
-		map <string, string> opcode_dict = {{"000000","Add"},
-											{"000001","Addi"},
-											{"000010","Sub"},
-											{"000011","Subi"},
-											{"000100","Mul"},
-											{"000101","Muli"},
-											{"000110","Or"},
-											{"000111","Ori"},
-											{"001000","And"},
-											{"001001","Andi"},
-											{"001010","Xor"},
-											{"001011","Xori"},
-											{"001100","LDW"},
-											{"001101","STW"},
-											{"001110","Bz"},
-											{"001111","Beq"},
-											{"010000","Jr"},
-											{"010001","Halt"},
-		};
+		
 		string r_type[6] = {"Add", "Sub", "Mul", "Or", "And", "Xor"};
 		
 		string cur_opcode = "111111";
@@ -38,9 +24,9 @@ class Instruction_decoder
 		int x_addr = 0;
 		string type = "U";
 		
-		Instruction_decoder(string);
-		int decode(void);
-        void functional_simulator(void);
+		Instruction_decoder(void);
+		int decode(string);
+        void functional_simulator(uint32_t *registers);
 		
 
 };
