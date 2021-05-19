@@ -5,6 +5,7 @@
 
 // Simple example to test
 // 00000000011000100010000000100000
+// 0x00622020
 // Above instruction is add r4, r3, r2
 // Load r2 = 2 and r3 = 3. Should get r4 = 5 at the end
 
@@ -62,6 +63,7 @@ int main(){
     // decodedTrace will be populated with decoded instructions and instruction will be executed
    for(int i = 0; i < tempTrace.size(); i++)               
    {
+        printf("trace should be %s\n", tempTrace.at(i));
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;

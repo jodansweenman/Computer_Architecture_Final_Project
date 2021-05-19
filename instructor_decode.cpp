@@ -66,6 +66,8 @@ int Instruction_decoder::decode(string hex_inst) {
 			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
 			reg_rd = stoi(bin_inst.substr(16,5),nullptr,2);
 			type = "R";
+			printf("reg_rs from decode() is %d\n", reg_rs);
+			printf("reg_rt from decode() is %d\n", reg_rt);
 		}
 		
 		// In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
