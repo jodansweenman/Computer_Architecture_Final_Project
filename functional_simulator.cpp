@@ -7,7 +7,7 @@
 
 // Functional simulator (Different action based on opcode)
 // Keeps track of register and memory state changes
-void Instruction_decoder::functional_simulator(uint32_t registers[]) {
+void Instruction_decoder::functional_simulator(uint32_t registers[], &pc) {
 
     int effective_address = 0;
 
@@ -78,13 +78,20 @@ void Instruction_decoder::functional_simulator(uint32_t registers[]) {
     // Control Flow Instructions
         case 001110: 
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
+            if(registers[reg_rs] == 0){
+                pc = pc + immediate;
+            }
             break;
         case 001111: 
         // BEQ Rs Rt x (Compare contents of reg Rs and Rt. If they are equal, branch to the 'x'th instruction from
         // the current instruction)
+            if(registers[reg_rs] == registers[reg_rt]){
+                pc = pc + immediate;
+            }
             break;
         case 010000: 
         // JR Rs (Load the PC with the contents of register Rs. Jump to the new PC)
+            pc = registers[reg_rs];
             break;
         case 010001: 
         // HALT (Stop executing the program)

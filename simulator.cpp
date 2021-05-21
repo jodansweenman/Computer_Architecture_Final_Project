@@ -68,7 +68,7 @@ int main(){
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
-        decodedTrace[i].functional_simulator(registers);
+        decodedTrace[i].functional_simulator(registers, &pc);
    }
 
    for(int i = 0; i < 32; i++)

@@ -27,7 +27,7 @@ class Instruction_decoder
 		
 		Instruction_decoder(void);
 		int decode(string);
-        void functional_simulator(uint32_t *registers);
+        void functional_simulator(uint32_t *registers, uint32_t *pc);
 		
 
 };
