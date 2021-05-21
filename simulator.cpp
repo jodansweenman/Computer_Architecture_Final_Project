@@ -35,7 +35,8 @@ int main(){
       string tp;
 
       while(getline(newfile, tp)){                            //read data from file object and put it into vector.
-          tempTrace.push_back(tp);    
+          tempTrace.push_back(tp); 
+          
       }
 
       newfile.close();                                        //close the file object.
@@ -63,7 +64,7 @@ int main(){
     // decodedTrace will be populated with decoded instructions and instruction will be executed
    for(int i = 0; i < tempTrace.size(); i++)               
    {
-        printf("trace should be %s\n", tempTrace.at(i));
+        cout << tempTrace.at(i) << "\n";
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;

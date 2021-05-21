@@ -15,6 +15,7 @@
 #include <sstream>
 #include <bitset>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -41,20 +42,43 @@ map <string, string> opcode_dict = {{"000000","Add"},
 // This function works as a class constructor that takes in the hexidecimal input
 Instruction_decoder::Instruction_decoder(void)
 {
-	//hex_inst = hex;
 }
 
 // This function decodes the hex input
 int Instruction_decoder::decode(string hex_inst) {
-//	if (!hex_inst) {
-//		return 1;
-//	} 
+
+	// Convert string input into hex which is stored as int_inst
 	stringstream ss;
-	ss << hex << hex_inst;
+	ss << hex_inst;
+	int int_inst;
+	ss >> hex >> int_inst;
+	
+	// Parse bits 31-26 for opcode
+	int_opcode = (int_inst >> 26) & 0x3F;
+	
+
+	// In the 'R' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, Rd = 5, and the rest of the instruction is unused
+	// [31-26] Opcode, [25-21] Rs, [20-16]Rt, [15-11]Rd, [10-0] Unused
+	// In MIPS lite all opcodes less than 12 are R type
+	if(int_opcode < 12){
+		type = "R";
+		reg_rs = (int_inst >> 21) & 0x1F;
+		reg_rt = (int_inst >> 16) & 0x1F;
+		reg_rd = (int_inst >> 11) & 0x1F;
+	}
+	
+	// // In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
+	// [31-26] Opcode, [25-21]Rs, [20-16]Rt, [15-0] Unused
+
+
+//cout << int_inst << "\n";
+/* 
+	// ss << hex << hex_inst;
 	unsigned n;
 	bitset<32> b(n);
 	string bin_inst = b.to_string();
 	string opcode = bin_inst.substr(0,6);
+	//cout << bin_inst << "\n";
 	
 	if (opcode_dict.count(opcode) > 0)
 	{
@@ -91,6 +115,6 @@ int Instruction_decoder::decode(string hex_inst) {
 			immediate = stoi(bin_inst.substr(16,16),nullptr,2);
 			
 		}	
-	}
+	} */
 	return 0;
 }

@@ -9,21 +9,13 @@
 // Keeps track of register and memory state changes
 void Instruction_decoder::functional_simulator(uint32_t registers[]) {
 
-    stringstream string_opcode(cur_opcode);
-    int opcode = 0;
-    string_opcode >> opcode;
-    
-    printf("Before switch: Register 2 should be %d \n", registers[2]);
-    printf("The value of reg_rs is %d \n", reg_rs);
+    int effective_address = 0;
 
-    switch(opcode) {
+    switch(int_opcode) {
     // Arithmetic Instructions
         case 000000: 
         // ADD Rd Rs Rt (Add the contents of regs Rs and Rt, transfer result to reg Rd)
             registers[reg_rd] = registers[reg_rs] + registers[reg_rt];
-            printf("Register 2 should be %d \n", registers[reg_rt]);
-            printf("Register 3 should be %d \n", registers[reg_rs]);
-            printf("Register 4 should be %d \n", registers[reg_rd]);
             break; 
         case 000001: 
         // ADDI Rt Rs Imm (Add the contents of reg Rs to the immediate value, transfer result to reg Rt)
@@ -74,12 +66,16 @@ void Instruction_decoder::functional_simulator(uint32_t registers[]) {
         case 001100: 
         // LDW Rd Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
+            effective_address = registers[reg_rs] + immediate;
+            //registers[reg_rd] = memory[effective_address];
             break;
         case 001101: 
         // STW Rt Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // store the contents of reg Rt (32-bits) at the memory address "A")
+            effective_address = registers[reg_rs] + immediate;
+            //memory[effective_address] = registers[reg_rd];
             break;
-        // Control Flow Instructions
+    // Control Flow Instructions
         case 001110: 
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             break;

@@ -17,6 +17,7 @@ class Instruction_decoder
 		string r_type[6] = {"Add", "Sub", "Mul", "Or", "And", "Xor"};
 		
 		string cur_opcode = "111111";
+		int int_opcode = 0;
 		int reg_rs = 0;
 		int reg_rt = 0;
 		int reg_rd = 0;
