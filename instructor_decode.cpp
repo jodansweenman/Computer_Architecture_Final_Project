@@ -56,11 +56,11 @@ int Instruction_decoder::decode(string hex_inst) {
 	// Parse bits 31-26 for opcode
 	int_opcode = (int_inst >> 26) & 0x3F;
 	
-
 	// In the 'R' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, Rd = 5, and the rest of the instruction is unused
 	// [31-26] Opcode, [25-21] Rs, [20-16]Rt, [15-11]Rd, [10-0] Unused
-	// In MIPS lite all opcodes less than 12 are R type
-	if(int_opcode < 12){
+	
+	// R type instructions are going to be less than 12 and the least significant bit will be zero. All the rest are I type.
+	if(int_opcode < 12 && ((int_opcode & 1) == 0 )){
 		type = "R";
 		reg_rs = (int_inst >> 21) & 0x1F;
 		reg_rt = (int_inst >> 16) & 0x1F;
@@ -68,8 +68,13 @@ int Instruction_decoder::decode(string hex_inst) {
 	}
 	
 	// // In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
-	// [31-26] Opcode, [25-21]Rs, [20-16]Rt, [15-0] Unused
-
+	// [31-26] Opcode, [25-21]Rs, [20-16]Rt, [15-0] Immediate
+	else{
+		type = "I";
+		reg_rs = (int_inst >> 21) & 0x1F;
+		reg_rt = (int_inst >> 16) & 0x1F;
+		immediate = int_inst & 0xFFFF;
+	}
 
 //cout << int_inst << "\n";
 /* 
