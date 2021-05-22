@@ -7,7 +7,7 @@
 
 // Functional simulator (Different action based on opcode)
 // Keeps track of register and memory state changes
-void Instruction_decoder::functional_simulator(uint32_t registers[], &pc) {
+void Instruction_decoder::functional_simulator(int registers[], int *pc) {
 
     int effective_address = 0;
 
@@ -91,10 +91,11 @@ void Instruction_decoder::functional_simulator(uint32_t registers[], &pc) {
             break;
         case 010000: 
         // JR Rs (Load the PC with the contents of register Rs. Jump to the new PC)
-            pc = registers[reg_rs];
+            *pc = registers[reg_rs];
             break;
         case 010001: 
         // HALT (Stop executing the program)
+            printf("We encountered halt");
             break;
     }
 }

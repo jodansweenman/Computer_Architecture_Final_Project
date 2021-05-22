@@ -18,7 +18,7 @@
 
 using namespace std;
 
-uint32_t pc;        // Program counter
+int pc;        // Program counter
 int registers[32]; // General purpose registers R0 - R31
  
 int main(){
@@ -68,37 +68,39 @@ int main(){
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
-        // Check if we hit "HALT" instruction
-        if(decodedTrace[i].int_opcode == 010001){
-           exit(0);
-        }
-       
    }
 
    // Execute instructions in order. No pipelining.
-   for(int i = 0; i < decodedTrace.size(); i++)               
+   for(int i = 0; i < sizeof(decodedTrace); i++)               
    {
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
-      if(pc == decodedTrace[i].tempAddress){
+      if(pc == decodedTrace[i].x_addr){
          decodedTrace[i].functional_simulator(registers, &pc);
+         // Check if we hit "HALT" instruction
+         if(decodedTrace[i].int_opcode == 17){
+            printf("We are at the end\n");
+            // Print results of all registers
+            for(int i = 0; i < 32; i++)
+            {
+               printf("Register %d = %d \n", i, registers[i]);
+            }
+            exit(0);
+         }
+         pc += 4;
       }
       // Need to find the instruction to execute next
       else{
          // Go through all decoded instructions to find which instruction address matches the program counter
          // When we find it exit the loop and go back to main loop to execute that instruction
-         for(int j = 0; j < decodedTrace.size(); j++){
-            if(pc == decodedTrace[j].tempAddress){
+         for(int j = 0; j < sizeof(decodedTrace); j++){
+            if(pc == decodedTrace[j].x_addr){
                i = j;
-               j = decodedTrace.size();
+               j = sizeof(decodedTrace);
             }
          }
       }
    }
 
-   // Print results of all registers
-   for(int i = 0; i < 32; i++)
-   {
-      printf("Register %d = %d \n", i, registers[i]);
-   }
+   
 
 }
