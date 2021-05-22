@@ -54,8 +54,8 @@ int main(){
    // }
 
    // For testing. Loading registers R2 and R3
-   registers[2] = 2;
-   registers[3] = 3;
+   //registers[2] = 2;
+   //registers[3] = 3;
 
     // Transfer read in file into an array of all instructions
    int tempAddress = 0;
@@ -64,7 +64,7 @@ int main(){
     // decodedTrace will be populated with decoded instructions
    for(int i = 0; i < tempTrace.size(); i++)               
    {
-        cout << tempTrace.at(i) << "\n";
+        //cout << tempTrace.at(i) << "\n";
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
@@ -75,18 +75,16 @@ int main(){
    {
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
       if(pc == decodedTrace[i].x_addr){
+         pc += 4;
          decodedTrace[i].functional_simulator(registers, &pc);
          // Check if we hit "HALT" instruction
          if(decodedTrace[i].int_opcode == 17){
             printf("We are at the end\n");
             // Print results of all registers
-            for(int i = 0; i < 32; i++)
-            {
-               printf("Register %d = %d \n", i, registers[i]);
-            }
+            decodedTrace[i].print_results(registers, &pc);
             exit(0);
          }
-         pc += 4;
+         
       }
       // Need to find the instruction to execute next
       else{

@@ -99,3 +99,13 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc) {
             break;
     }
 }
+
+void Instruction_decoder::print_results(int registers[], int *pc) {
+    
+    printf("Program counter = %d\n", *pc);
+    
+    for(int i = 0; i < 32; i++)
+    {
+        printf("Register %d = %d \n", i, registers[i]);    
+    }
+}

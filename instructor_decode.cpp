@@ -55,7 +55,7 @@ int Instruction_decoder::decode(string hex_inst) {
 	
 	// Parse bits 31-26 for opcode
 	int_opcode = (int_inst >> 26) & 0x3F;
-	cout << int_opcode << "\n";
+	//cout << int_opcode << "\n";
 	
 	// In the 'R' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, Rd = 5, and the rest of the instruction is unused
 	// [31-26] Opcode, [25-21] Rs, [20-16]Rt, [15-11]Rd, [10-0] Unused
