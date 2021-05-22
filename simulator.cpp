@@ -19,7 +19,7 @@
 using namespace std;
 
 uint32_t pc;        // Program counter
-uint32_t registers[32]; // General purpose registers R0 - R31
+int registers[32]; // General purpose registers R0 - R31
  
 int main(){
    
@@ -61,16 +61,41 @@ int main(){
    int tempAddress = 0;
    Instruction_decoder decodedTrace[tempTrace.size()];
 
-    // decodedTrace will be populated with decoded instructions and instruction will be executed
+    // decodedTrace will be populated with decoded instructions
    for(int i = 0; i < tempTrace.size(); i++)               
    {
         cout << tempTrace.at(i) << "\n";
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
-        decodedTrace[i].functional_simulator(registers, &pc);
+        // Check if we hit "HALT" instruction
+        if(decodedTrace[i].int_opcode == 010001){
+           exit(0);
+        }
+       
    }
 
+   // Execute instructions in order. No pipelining.
+   for(int i = 0; i < decodedTrace.size(); i++)               
+   {
+      // Evaluate if PC is the next instruction or if we need to go to a different instruction
+      if(pc == decodedTrace[i].tempAddress){
+         decodedTrace[i].functional_simulator(registers, &pc);
+      }
+      // Need to find the instruction to execute next
+      else{
+         // Go through all decoded instructions to find which instruction address matches the program counter
+         // When we find it exit the loop and go back to main loop to execute that instruction
+         for(int j = 0; j < decodedTrace.size(); j++){
+            if(pc == decodedTrace[j].tempAddress){
+               i = j;
+               j = decodedTrace.size();
+            }
+         }
+      }
+   }
+
+   // Print results of all registers
    for(int i = 0; i < 32; i++)
    {
       printf("Register %d = %d \n", i, registers[i]);

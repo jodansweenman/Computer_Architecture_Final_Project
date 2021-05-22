@@ -79,14 +79,14 @@ void Instruction_decoder::functional_simulator(uint32_t registers[], &pc) {
         case 001110: 
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             if(registers[reg_rs] == 0){
-                pc = pc + immediate;
+                pc = pc + (immediate * 4);
             }
             break;
         case 001111: 
         // BEQ Rs Rt x (Compare contents of reg Rs and Rt. If they are equal, branch to the 'x'th instruction from
         // the current instruction)
             if(registers[reg_rs] == registers[reg_rt]){
-                pc = pc + immediate;
+                pc = pc + (immediate * 4);
             }
             break;
         case 010000: 
