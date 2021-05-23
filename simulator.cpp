@@ -18,7 +18,7 @@
 
 using namespace std;
 
-int pc;        // Program counter
+int pc = 0;        // Program counter
 int registers[32]; // General purpose registers R0 - R31
  
 int main(){
@@ -72,19 +72,32 @@ int main(){
         tempAddress += 4;
    }
 
-   memory_size = sizeof(tempTrace);
+   memory_size = tempTrace.size() * 4;
 
    // Execute instructions in order. No pipelining.
-   for(int i = 0; i < sizeof(decodedTrace); i++)               
+   for(int i = 0; i < memory_size; i++)               
+   //for(int i = 0; i < 30; i++)
    {
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
+      cout << "Program counter: " << pc << "\n";
+
       if(pc == decodedTrace[i].x_addr){
-         pc += 4;
          decodedTrace[i].functional_simulator(registers, &pc, decodedTrace, memory_size);
          
+         if(decodedTrace[i].reg_rd == 7 || decodedTrace[i].reg_rs == 7 || decodedTrace[i].reg_rt == 7){
+            //cout << "Program counter: " << pc;
+            cout << " Opcode: " << decodedTrace[i].cur_opcode;
+            cout << " Rs: " << decodedTrace[i].reg_rs;
+            cout << " Rt: " << decodedTrace[i].reg_rt;
+            cout << " Rd: " << decodedTrace[i].reg_rd;
+            cout << " Immediate: " << decodedTrace[i].immediate; 
+            cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
+            decodedTrace[i].print_results(registers, &pc);
+         }
+         pc += 4;
          // Check if we hit "HALT" instruction
          if(decodedTrace[i].int_opcode == 17){
-            printf("We are at the end\n");
+            cout << "We are at the end\n";
             decodedTrace[i].print_results(registers, &pc);
             //for(int i = 0; i < sizeof(decodedTrace); i++) 
             for(int i = 0; i < 400; i++)             
@@ -102,11 +115,13 @@ int main(){
       else{
          // Go through all decoded instructions to find which instruction address matches the program counter
          // When we find it exit the loop and go back to main loop to execute that instruction
-        printf("We need to find the instruction to execute next\n");
+        //cout << "We need to find the instruction to execute next\n";
         for(int j = 0; j < sizeof(decodedTrace); j++){
             if(pc == decodedTrace[j].x_addr){
-               i = j;
-               j = sizeof(decodedTrace);
+               // i will automatically increment so we need to subtract from j so they are equal next time through
+               // the loop
+               i = j-1;
+               break;
             }
          }
       }

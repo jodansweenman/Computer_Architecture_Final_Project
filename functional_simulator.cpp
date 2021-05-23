@@ -17,15 +17,17 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
     // Arithmetic Instructions
         case 0: //000000
         // ADD Rd Rs Rt (Add the contents of regs Rs and Rt, transfer result to reg Rd)
+            //cout << "We are in add\n";
             registers[reg_rd] = registers[reg_rs] + registers[reg_rt];
             break; 
         case 1: //000001
         // ADDI Rt Rs Imm (Add the contents of reg Rs to the immediate value, transfer result to reg Rt)
+            //cout << "We are in addi\n";
             registers[reg_rt] = registers[reg_rs] + immediate;
             break; 
         case 2: //000010
         // SUB Rd Rs Rt (Subtract the contents of reg Rt from Rs, transfer result to reg Rd)
-            registers[reg_rt] = registers[reg_rs] - registers[reg_rt];
+            registers[reg_rd] = registers[reg_rs] - registers[reg_rt];
             break; 
         case 3: //000011
         // SUBI Rt Rs Imm (Subtract the immediate value from the contents of reg Rs, transfer result to reg Rt)
@@ -33,7 +35,7 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
             break;
         case 4: //000100
         // MUL Rd Rs Rt (Multiply the contents of regs Rs and Rt, transfer result to reg Rd)
-            registers[reg_rt] = registers[reg_rs] * registers[reg_rt];
+            registers[reg_rd] = registers[reg_rs] * registers[reg_rt];
             break;
         case 5: //000101
         // MULI Rt Rs Imm (Multiply the contents of reg Rs with the immediate value, transfer result to reg Rt)
@@ -69,12 +71,15 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // LDW Rd Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
             effective_address = registers[reg_rs] + immediate;
+            //cout << " In LDW\n";
+            //cout << "Effective address: " << effective_address << "\n";
             for(int i = 0; i < memory_size; i++)               
             {
+                //cout << "memory address: " << memory[i].x_addr << "\n";
                 if(effective_address == memory[i].x_addr){
-                    registers[reg_rd] = memory[i].entire_value;
-                    cout << reg_rd << "\n";
-                    cout << registers[reg_rd] << "\n";
+                    registers[reg_rt] = memory[i].entire_value;
+                    //cout << reg_rt << "\n";
+                    //cout << registers[reg_rt] << "\n";
                 }
             }
             break;
@@ -99,32 +104,28 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         case 15: //001111
         // BEQ Rs Rt x (Compare contents of reg Rs and Rt. If they are equal, branch to the 'x'th instruction from
         // the current instruction)
-            printf("in BEQ\n");
-            cout << registers[reg_rs] << "\n";
-            cout << registers[reg_rt] << "\n";  
+            //cout << "in BEQ\n";
             if(registers[reg_rs] == registers[reg_rt]){
-                pc = pc + (immediate * 4);
-                cout << pc << "\n";
-                cout << immediate << "\n";
+                *pc = *pc + 4 + (immediate * 4);
             }
             break;
         case 16: //010000
         // JR Rs (Load the PC with the contents of register Rs. Jump to the new PC)
-            *pc = registers[reg_rs];
+            *pc = registers[reg_rs] - 4;
             break;
         case 17: //010001
         // HALT (Stop executing the program)
-            printf("We encountered halt");
+            cout << "We encountered halt\n";
             break;
     }
 }
 
 void Instruction_decoder::print_results(int registers[], int *pc) {
     
-    printf("Program counter = %d\n", *pc);
+    //printf("Program counter = %d\n", *pc);
     
     for(int i = 0; i < 32; i++)
     {
-        printf("Register %d = %d \n", i, registers[i]);    
+        cout << "Register "<< i << " : " <<  registers[i] << "\n";    
     }
 }
