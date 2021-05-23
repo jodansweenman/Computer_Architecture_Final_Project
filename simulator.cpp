@@ -23,6 +23,8 @@ int registers[32]; // General purpose registers R0 - R31
  
 int main(){
    
+   int memory_size;
+
    // Read in all the instructions in from a file
    fstream newfile;
 
@@ -70,18 +72,28 @@ int main(){
         tempAddress += 4;
    }
 
+   memory_size = sizeof(tempTrace);
+
    // Execute instructions in order. No pipelining.
    for(int i = 0; i < sizeof(decodedTrace); i++)               
    {
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
       if(pc == decodedTrace[i].x_addr){
          pc += 4;
-         decodedTrace[i].functional_simulator(registers, &pc);
+         decodedTrace[i].functional_simulator(registers, &pc, decodedTrace, memory_size);
+         
          // Check if we hit "HALT" instruction
          if(decodedTrace[i].int_opcode == 17){
             printf("We are at the end\n");
-            // Print results of all registers
             decodedTrace[i].print_results(registers, &pc);
+            //for(int i = 0; i < sizeof(decodedTrace); i++) 
+            for(int i = 0; i < 400; i++)             
+            {
+               //printf("Address: ");
+               //cout << decodedTrace[i].x_addr << ", ";
+               //printf("Contents: ");
+               //cout << decodedTrace[i].entire_value << "\n";
+            }
             exit(0);
          }
          
@@ -90,7 +102,8 @@ int main(){
       else{
          // Go through all decoded instructions to find which instruction address matches the program counter
          // When we find it exit the loop and go back to main loop to execute that instruction
-         for(int j = 0; j < sizeof(decodedTrace); j++){
+        printf("We need to find the instruction to execute next\n");
+        for(int j = 0; j < sizeof(decodedTrace); j++){
             if(pc == decodedTrace[j].x_addr){
                i = j;
                j = sizeof(decodedTrace);

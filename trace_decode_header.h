@@ -22,12 +22,13 @@ class Instruction_decoder
 		int reg_rt = 0;
 		int reg_rd = 0;
 		int immediate = 0;
-		int x_addr = 0;
+		int x_addr = 0;			// Address in memory
+		uint32_t entire_value = 0;	// Unaltered read in value
 		string type = "U";
 		
 		Instruction_decoder(void);
 		int decode(string);
-        void functional_simulator(int *registers, int *pc);
+        void functional_simulator(int *registers, int *pc, Instruction_decoder *memory, int memory_size);
 		void print_results(int *registers, int *pc);
 		
 

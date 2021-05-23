@@ -47,34 +47,43 @@ Instruction_decoder::Instruction_decoder(void)
 // This function decodes the hex input
 int Instruction_decoder::decode(string hex_inst) {
 
-	// Convert string input into hex which is stored as int_inst
+	// Convert string input into hex
 	stringstream ss;
-	ss << hex_inst;
-	int int_inst;
-	ss >> hex >> int_inst;
+	ss << hex << hex_inst;
+
+	// Convert hex to binary
+	unsigned n;
+	ss >> n;
+	bitset<32> b(n);
+	string bin_inst = b.to_string();
 	
 	// Parse bits 31-26 for opcode
-	int_opcode = (int_inst >> 26) & 0x3F;
-	//cout << int_opcode << "\n";
+	string opcode = bin_inst.substr(0,6);
+	int_opcode = stoi(opcode,nullptr,2);
+
+	// Save whole read in line to be used as memory
+	entire_value = stoi(bin_inst,nullptr,2);
 	
-	// In the 'R' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, Rd = 5, and the rest of the instruction is unused
-	// [31-26] Opcode, [25-21] Rs, [20-16]Rt, [15-11]Rd, [10-0] Unused
-	
-	// R type instructions are going to be less than 12 and the least significant bit will be zero. All the rest are I type.
-	if(int_opcode < 12 && ((int_opcode & 1) == 0 )){
-		type = "R";
-		reg_rs = (int_inst >> 21) & 0x1F;
-		reg_rt = (int_inst >> 16) & 0x1F;
-		reg_rd = (int_inst >> 11) & 0x1F;
-	}
-	
-	// // In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
-	// [31-26] Opcode, [25-21]Rs, [20-16]Rt, [15-0] Immediate
-	else{
-		type = "I";
-		reg_rs = (int_inst >> 21) & 0x1F;
-		reg_rt = (int_inst >> 16) & 0x1F;
-		immediate = int_inst & 0xFFFF;
+	if (opcode_dict.count(opcode) > 0)
+	{
+		// In the 'R' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, Rd = 5, and the rest of the instruction is unused
+		// [31-26] Opcode, [25-21] Rs, [20-16]Rt, [15-11]Rd, [10-0] Unused
+		cur_opcode = opcode_dict[opcode];	
+		if(find(r_type,r_type+6, cur_opcode) != r_type+6){
+			type = "R";
+			reg_rs = stoi(bin_inst.substr(6,5),nullptr,2);
+			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
+			reg_rd = stoi(bin_inst.substr(16,5),nullptr,2);
+		}
+		
+		// // In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
+		// [31-26] Opcode, [25-21]Rs, [20-16]Rt, [15-0] Immediate
+		else{
+			type = "I";
+			reg_rs = stoi(bin_inst.substr(6,5),nullptr,2);
+			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
+			immediate = stoi(bin_inst.substr(16,16),nullptr,2);
+		}
 	}
 
 //cout << int_inst << "\n";
@@ -96,8 +105,6 @@ int Instruction_decoder::decode(string hex_inst) {
 			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
 			reg_rd = stoi(bin_inst.substr(16,5),nullptr,2);
 			type = "R";
-			printf("reg_rs from decode() is %d\n", reg_rs);
-			printf("reg_rt from decode() is %d\n", reg_rt);
 		}
 		
 		// In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
