@@ -20,7 +20,9 @@ using namespace std;
 
 int pc = 0;        // Program counter
 int registers[32]; // General purpose registers R0 - R31
- 
+Instruction_decoder decodedTrace[1024];
+int instruction_count = 0; //Total number of instructions
+
 int main(){
    
    int memory_size;
@@ -61,7 +63,9 @@ int main(){
 
     // Transfer read in file into an array of all instructions
    int tempAddress = 0;
-   Instruction_decoder decodedTrace[tempTrace.size()];
+   
+   // Moved to outside main()
+   //Instruction_decoder decodedTrace[tempTrace.size()];
 
     // decodedTrace will be populated with decoded instructions
    for(int i = 0; i < tempTrace.size(); i++)               
@@ -74,7 +78,7 @@ int main(){
 
    //memory_size = tempTrace.size() * 4;
    memory_size = tempTrace.size();
-   cout << "Memory size: " << memory_size << "\n";
+   //cout << "Memory size: " << memory_size << "\n";
 
    // Execute instructions in order. No pipelining.
    for(int i = 0; i < memory_size; i++)               
@@ -95,15 +99,25 @@ int main(){
          decodedTrace[i].print_results(registers, &pc);
          */
          decodedTrace[i].functional_simulator(registers, &pc, decodedTrace, memory_size);
-         
-         pc += 4;
-         // Check if we hit "HALT" instruction
-         if(decodedTrace[i].int_opcode == 17){
-            cout << "We are at the end\n";
-            decodedTrace[i].print_results(registers, &pc);
+         // Troubleshooting if memory is coming back correctly
+         if(decodedTrace[i].int_opcode == 13){
+            cout << "In Main \n";
             cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
             cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
             cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+         }
+
+         pc += 4;
+         instruction_count += 1; // Keep track of number of instructions executed
+
+         // Check if we hit "HALT" instruction
+         if(decodedTrace[i].int_opcode == 17){
+            cout << "We are at the end\n";
+            cout << "Total number of instructions: " << instruction_count << "\n";
+            decodedTrace[i].print_results(registers, &pc);
+            //cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+            //cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+            //cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
             exit(0);
          }
          

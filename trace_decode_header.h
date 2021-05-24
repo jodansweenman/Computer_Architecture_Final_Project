@@ -23,7 +23,8 @@ class Instruction_decoder
 		int reg_rd = 0;
 		int immediate = 0;
 		int x_addr = 0;			// Address in memory
-		uint32_t entire_value = 0;	// Unaltered read in value
+		//uint32_t entire_value = 0;	// Unaltered read in value
+		int entire_value = 0;	// Unaltered read in value
 		string type = "U";
 		
 		Instruction_decoder(void);

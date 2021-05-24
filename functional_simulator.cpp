@@ -72,7 +72,7 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
             effective_address = registers[reg_rs] + immediate;
             //cout << " In LDW\n";
-            cout << "Effective address: " << effective_address << "\n";
+            //cout << "Effective address: " << effective_address << "\n";
             for(int i = 0; i < memory_size; i++)               
             {
                 //cout << "memory address: " << memory[i].x_addr << "\n";
@@ -93,6 +93,8 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
             {
                 if(effective_address == memory[i].x_addr){
                     memory[i].entire_value = registers[reg_rt];
+                    cout << "memory address: " << memory[i].x_addr << "\n";
+                    cout << "Value at that memory address: " << memory[i].entire_value << "\n";
                 }
             }
             break;
@@ -100,7 +102,7 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         case 14: //001110
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             if(registers[reg_rs] == 0){
-                pc = pc + (immediate * 4);
+                *pc = *pc + (immediate * 4) - 4;
             }
             break;
         case 15: //001111
@@ -108,7 +110,8 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // the current instruction)
             //cout << "in BEQ\n";
             if(registers[reg_rs] == registers[reg_rt]){
-                *pc = *pc + 4 + (immediate * 4);
+                //*pc = *pc + 4 + (immediate * 4);
+                *pc = *pc + (immediate * 4) - 4;
             }
             break;
         case 16: //010000
@@ -117,14 +120,14 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
             break;
         case 17: //010001
         // HALT (Stop executing the program)
-            cout << "We encountered halt\n";
+            //cout << "We encountered halt\n";
             break;
     }
 }
 
 void Instruction_decoder::print_results(int registers[], int *pc) {
     
-    //printf("Program counter = %d\n", *pc);
+    cout << "Program counter: " << pc << "\n";
     
     for(int i = 0; i < 32; i++)
     {
