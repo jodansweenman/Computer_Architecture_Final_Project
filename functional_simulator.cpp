@@ -93,8 +93,8 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
             {
                 if(effective_address == memory[i].x_addr){
                     memory[i].entire_value = registers[reg_rt];
-                    cout << "memory address: " << memory[i].x_addr << "\n";
-                    cout << "Value at that memory address: " << memory[i].entire_value << "\n";
+                    //cout << "memory address: " << memory[i].x_addr << "\n";
+                    //cout << "Value at that memory address: " << memory[i].entire_value << "\n";
                 }
             }
             break;
@@ -127,7 +127,7 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
 
 void Instruction_decoder::print_results(int registers[], int *pc) {
     
-    cout << "Program counter: " << pc << "\n";
+    cout << "Program counter: " << *pc << "\n";
     
     for(int i = 0; i < 32; i++)
     {

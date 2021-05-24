@@ -99,13 +99,6 @@ int main(){
          decodedTrace[i].print_results(registers, &pc);
          */
          decodedTrace[i].functional_simulator(registers, &pc, decodedTrace, memory_size);
-         // Troubleshooting if memory is coming back correctly
-         if(decodedTrace[i].int_opcode == 13){
-            cout << "In Main \n";
-            cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-            cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-            cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-         }
 
          pc += 4;
          instruction_count += 1; // Keep track of number of instructions executed
@@ -115,9 +108,9 @@ int main(){
             cout << "We are at the end\n";
             cout << "Total number of instructions: " << instruction_count << "\n";
             decodedTrace[i].print_results(registers, &pc);
-            //cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-            //cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-            //cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+            cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+            cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
+            cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
             exit(0);
          }
          
