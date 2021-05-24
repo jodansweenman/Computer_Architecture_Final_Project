@@ -72,14 +72,16 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
             effective_address = registers[reg_rs] + immediate;
             //cout << " In LDW\n";
-            //cout << "Effective address: " << effective_address << "\n";
+            cout << "Effective address: " << effective_address << "\n";
             for(int i = 0; i < memory_size; i++)               
             {
                 //cout << "memory address: " << memory[i].x_addr << "\n";
                 if(effective_address == memory[i].x_addr){
                     registers[reg_rt] = memory[i].entire_value;
+                    //cout << "Value at that memory address: " << memory[i].entire_value << "\n";
                     //cout << reg_rt << "\n";
                     //cout << registers[reg_rt] << "\n";
+                    break;
                 }
             }
             break;
