@@ -92,7 +92,7 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
             for(int i = 0; i < memory_size; i++)               
             {
                 if(effective_address == memory[i].x_addr){
-                    memory[i].entire_value = registers[reg_rd];
+                    memory[i].entire_value = registers[reg_rt];
                 }
             }
             break;
