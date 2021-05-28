@@ -14,14 +14,20 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <queue>
 #include "trace_decode_header.h"
 
 using namespace std;
 
-int pc = 0;        // Program counter
-int registers[32]; // General purpose registers R0 - R31
-Instruction_decoder decodedTrace[1024];
-int instruction_count = 0; //Total number of instructions
+int pc = 0;                            // Program counter
+int registers[32];                     // General purpose registers R0 - R31
+Instruction_decoder decodedTrace[1024];// Array of decoded instructions
+int instruction_count = 0;             // Total number of instructions executed
+int clock_cycles_nfw = 4;              // Execution time in clock cycles for no forwarding
+                                       // Starts at 4 to prime the pipeline
+int clock_cycles_fw = 4;               // Execution time in clock cycles for forwarding
+                                       // Starts at 4 to prime the pipeline
+deque<Instruction_decoder> pipeline;   //Holds current instructions in the pipeline
 
 int main(){
    
@@ -29,43 +35,22 @@ int main(){
 
    // Read in all the instructions in from a file
    fstream newfile;
-
    vector<string> tempTrace;
 
-   newfile.open("trace.txt",ios::in);                         //open a file to perform read operation using file object
+   newfile.open("trace.txt",ios::in);        // open a file to perform read operation using file object
 
-   if (newfile.is_open()){                                    //checking whether the file is open
+   if (newfile.is_open()){                   // checking whether the file is open
 
       string tp;
 
-      while(getline(newfile, tp)){                            //read data from file object and put it into vector.
-          tempTrace.push_back(tp); 
-          
+      while(getline(newfile, tp)){           // read data from file object and put it into vector
+          tempTrace.push_back(tp);   
       }
-
-      newfile.close();                                        //close the file object.
+      newfile.close();                       // close the file object
    }
-
-   // traceInstruction inputInstruction[tempTrace.size()];       //declare number of objects equal to number of trace inputs read
-
-   // int tempAddress = 0;
-
-   // for(int i = 0; i < tempTrace.size(); i++)                 //populate array of objects with vector
-   // {
-   //      inputInstruction[i].trace = tempTrace.at(i);
-   //      inputInstruction[i].address = tempAddress;
-   //      tempAddress += 4;
-   // }
-
-   // For testing. Loading registers R2 and R3
-   //registers[2] = 2;
-   //registers[3] = 3;
 
     // Transfer read in file into an array of all instructions
    int tempAddress = 0;
-   
-   // Moved to outside main()
-   //Instruction_decoder decodedTrace[tempTrace.size()];
 
     // decodedTrace will be populated with decoded instructions
    for(int i = 0; i < tempTrace.size(); i++)               
@@ -76,19 +61,14 @@ int main(){
         tempAddress += 4;
    }
 
-   //memory_size = tempTrace.size() * 4;
    memory_size = tempTrace.size();
    //cout << "Memory size: " << memory_size << "\n";
 
-   // Execute instructions in order. No pipelining.
+   // Execute instructions in order
    for(int i = 0; i < memory_size; i++)               
-   //for(int i = 0; i < 14; i++)
    {
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
-      //cout << "Program counter: " << pc << "\n";
-
       if(pc == decodedTrace[i].x_addr){
-         
          /*
          cout << " Opcode: " << decodedTrace[i].cur_opcode;
          cout << " Rs: " << decodedTrace[i].reg_rs;
@@ -99,31 +79,71 @@ int main(){
          decodedTrace[i].print_results(registers, &pc);
          */
          decodedTrace[i].functional_simulator(registers, &pc, decodedTrace, memory_size);
-
          pc += 4;
          instruction_count += 1; // Keep track of number of instructions executed
+
+         // Determine how many clock cycles the instruction will take to complete
+         // Put current instruction in the pipeline
+         pipeline.push_back(decodedTrace[i]);
+
+         // Check for mispredicted branches. Assume an always-not-taken branch prediction
+         // If branch is taken or if it is a jump instruction, need to add 2 stall cycles. 3 clock cycles total
+         if(decodedTrace[i].int_opcode == 16 || decodedTrace[i].branch_taken){
+            clock_cycles_nfw += 3;
+            clock_cycles_fw += 3;     
+         }
+         // Check for RAW hazards in previous instructions
+         // Instruction after a load is a special case since there is still a stall with forwarding
+         else if(pipeline[1].int_opcode == 12 && (decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination)){
+            // If not using forwarding, add 2 stall cycles. Will take three clock cycles total
+            clock_cycles_nfw += 3;
+            // If using forwarding, need to add 1 stall cycle. Will take 2 clock cycle total
+            clock_cycles_fw += 2;
+         }
+         else if(decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination){
+            // If not using forwarding, add 2 stall cycles. Will take three clock cycles total
+            clock_cycles_nfw += 3;
+            // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
+            clock_cycles_fw += 1;
+         }
+         // Check for RAW hazards in second previous instruction
+         else if(decodedTrace[i].source1 == pipeline[0].destination || decodedTrace[i].source2 == pipeline[0].destination){
+            // If not using forwarding add 1 stall cycle. Will take two clock cycles total
+            clock_cycles_nfw += 2;
+            // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
+            clock_cycles_fw += 1;
+         }
+         // No hazard
+         else {
+            clock_cycles_nfw += 1;
+            clock_cycles_fw += 1;
+         }
+
+         //If queue has reached the limit, remove oldest item
+         if(pipeline.size() >= 3){
+            pipeline.pop_front();
+         }
 
          // Check if we hit "HALT" instruction
          if(decodedTrace[i].int_opcode == 17){
             cout << "We are at the end\n";
             cout << "Total number of instructions: " << instruction_count << "\n";
+            cout << "Clock cycles with out forwarding: " << clock_cycles_nfw << "\n";
+            cout << "Clock cycles with forwarding: " << clock_cycles_fw << "\n";
             decodedTrace[i].print_results(registers, &pc);
             cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
             cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
             cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
             exit(0);
          }
-         
       }
       // Need to find the instruction to execute next
       else{
          // Go through all decoded instructions to find which instruction address matches the program counter
          // When we find it exit the loop and go back to main loop to execute that instruction
-        //cout << "We need to find the instruction to execute next\n";
          for(int j = 0; j < memory_size; j++){
             if(pc == decodedTrace[j].x_addr){
-               // i will automatically increment so we need to subtract from j so they are equal next time through
-               // the loop
+               // i will automatically increment so we need to subtract 1 from j so they are equal next time through the loop
                i = j-1;
                break;
             }

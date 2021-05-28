@@ -11,59 +11,85 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
 
     int effective_address = 0;
 
-   // cout << "Opcode: "<< int_opcode << "\n";
-
     switch(int_opcode) {
     // Arithmetic Instructions
         case 0: //000000
         // ADD Rd Rs Rt (Add the contents of regs Rs and Rt, transfer result to reg Rd)
-            //cout << "We are in add\n";
+            source1 = reg_rs;
+            source2 = reg_rt;
+            destination = reg_rd;
             registers[reg_rd] = registers[reg_rs] + registers[reg_rt];
             break; 
         case 1: //000001
         // ADDI Rt Rs Imm (Add the contents of reg Rs to the immediate value, transfer result to reg Rt)
-            //cout << "We are in addi\n";
+            source1 = reg_rs;
+            destination = reg_rt;
             registers[reg_rt] = registers[reg_rs] + immediate;
             break; 
         case 2: //000010
         // SUB Rd Rs Rt (Subtract the contents of reg Rt from Rs, transfer result to reg Rd)
+            source1 = reg_rs;
+            source2 = reg_rt;
+            destination = reg_rd;
             registers[reg_rd] = registers[reg_rs] - registers[reg_rt];
             break; 
         case 3: //000011
         // SUBI Rt Rs Imm (Subtract the immediate value from the contents of reg Rs, transfer result to reg Rt)
+            source1 = reg_rs;
+            destination = reg_rt;
             registers[reg_rt] = registers[reg_rs] - immediate;
             break;
         case 4: //000100
         // MUL Rd Rs Rt (Multiply the contents of regs Rs and Rt, transfer result to reg Rd)
+            source1 = reg_rs;
+            source2 = reg_rt;
+            destination = reg_rd;
             registers[reg_rd] = registers[reg_rs] * registers[reg_rt];
             break;
         case 5: //000101
         // MULI Rt Rs Imm (Multiply the contents of reg Rs with the immediate value, transfer result to reg Rt)
+            source1 = reg_rs;
+            destination = reg_rt;
             registers[reg_rt] = registers[reg_rs] * immediate;
             break;
     // Logical Instructions
         case 6: //000110
         // OR Rd Rs Rt (Take a bitwise OR of the contents of regs Rs and Rt, result to Rd)
+            source1 = reg_rs;
+            source2 = reg_rt;
+            destination = reg_rd;
             registers[reg_rd] = registers[reg_rs] | registers[reg_rt];
             break;
         case 7: //000111
         // ORI Rt Rs Imm (Take a bitwise OR of the contents of reg Rs and the immediate value, result to Rt)
+            source1 = reg_rs;
+            destination = reg_rt;
             registers[reg_rt] = registers[reg_rs] | immediate;
             break;
         case 8: //001000
         // AND Rd Rs Rt (Take a bitwise AND of the contents of regs Rs and Rt, result to Rd)
+            source1 = reg_rs;
+            source2 = reg_rt;
+            destination = reg_rd;
             registers[reg_rd] = registers[reg_rs] & registers[reg_rt];
             break;
         case 9: //001001
         // ANDI Rt Rs Imm (Take a bitwise AND of the contents of reg Rs and the immediate value, result to Rt)
+            source1 = reg_rs;
+            destination = reg_rt;
             registers[reg_rt] = registers[reg_rs] & immediate;
             break;
         case 10: //001010
         // XOR Rd Rs Rt (Take a bitwise XOR of the contents or regs Rs and Rt, result to Rd)
+            source1 = reg_rs;
+            source2 = reg_rt;
+            destination = reg_rd;
             registers[reg_rd] = registers[reg_rs] ^ registers[reg_rt];
             break;
         case 11: //001011
         // XORI Rt Rs Imm (Take a bitwise XOR or the contents of Reg Rs and the immediate value, result to reg Rt)
+            source1 = reg_rs;
+            destination = reg_rt;
             registers[reg_rt] = registers[reg_rs] ^ immediate;
             break;
     // Memory Access Instructions
@@ -71,16 +97,9 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // LDW Rd Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
             effective_address = registers[reg_rs] + immediate;
-            //cout << " In LDW\n";
-            //cout << "Effective address: " << effective_address << "\n";
-            for(int i = 0; i < memory_size; i++)               
-            {
-                //cout << "memory address: " << memory[i].x_addr << "\n";
+            for(int i = 0; i < memory_size; i++) {
                 if(effective_address == memory[i].x_addr){
                     registers[reg_rt] = memory[i].entire_value;
-                    //cout << "Value at that memory address: " << memory[i].entire_value << "\n";
-                    //cout << reg_rt << "\n";
-                    //cout << registers[reg_rt] << "\n";
                     break;
                 }
             }
@@ -89,12 +108,9 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // STW Rt Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // store the contents of reg Rt (32-bits) at the memory address "A")
             effective_address = registers[reg_rs] + immediate;
-            for(int i = 0; i < memory_size; i++)               
-            {
+            for(int i = 0; i < memory_size; i++) {
                 if(effective_address == memory[i].x_addr){
                     memory[i].entire_value = registers[reg_rt];
-                    //cout << "memory address: " << memory[i].x_addr << "\n";
-                    //cout << "Value at that memory address: " << memory[i].entire_value << "\n";
                 }
             }
             break;
@@ -103,15 +119,15 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             if(registers[reg_rs] == 0){
                 *pc = *pc + (immediate * 4) - 4;
+                branch_taken = true;
             }
             break;
         case 15: //001111
         // BEQ Rs Rt x (Compare contents of reg Rs and Rt. If they are equal, branch to the 'x'th instruction from
         // the current instruction)
-            //cout << "in BEQ\n";
             if(registers[reg_rs] == registers[reg_rt]){
-                //*pc = *pc + 4 + (immediate * 4);
-                *pc = *pc + (immediate * 4) - 4;
+                *pc = *pc + (immediate * 4) - 4;       // Subtract 4 since PC is automatically incremented by 4 in main loop
+                branch_taken = true;
             }
             break;
         case 16: //010000
@@ -120,7 +136,6 @@ void Instruction_decoder::functional_simulator(int registers[], int *pc, Instruc
             break;
         case 17: //010001
         // HALT (Stop executing the program)
-            //cout << "We encountered halt\n";
             break;
     }
 }
