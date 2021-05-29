@@ -169,8 +169,8 @@ void Instruction_decoder::print_results(int registers[], struct statistics *stat
     cout << "Memory access instructions: " << stats->memory << "\n";
     cout << "Control transfer instructions: " << stats->control << "\n\n";
     cout << "Clock cycles with out forwarding: " << stats->clock_cycles_nfw << "\n";
+    cout << "Total stalls with out forwarding: " << stats->stalls_nfw << "\n\n";
     cout << "Clock cycles with forwarding: " << stats->clock_cycles_fw << "\n";
-    cout << "Total stalls with out forwarding: " << stats->stalls_nfw << "\n";
     cout << "Total stalls with forwarding: " << stats->stalls_fw << "\n";
     for(int i = 0; i < 32; i++)
     {
