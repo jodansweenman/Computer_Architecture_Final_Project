@@ -29,13 +29,12 @@ class Instruction_decoder
 		int entire_value = 0;	// Unaltered read in value
 		bool branch_taken = false;	
 		string type = "U";
-		
+
 		Instruction_decoder(void);
 		int decode(string);
-        void functional_simulator(int *registers, int *pc, Instruction_decoder *memory, int memory_size);
-		void print_results(int *registers, int *pc);
-		
-
+        void functional_simulator(int *registers, struct statistics *stats, Instruction_decoder *memory, int memory_size);
+		void print_results(int *registers, struct statistics *stats);	
+			
 };
 
 class traceInstruction
@@ -47,5 +46,19 @@ class traceInstruction
     string trace;
     int address;
 }; 
+
+struct statistics
+{
+	int instruction_count = 0;
+	int arithemtic = 0;
+	int logical = 0;
+	int memory = 0;
+	int control = 0;
+	int pc = 0;					// Program counter
+	int stalls_nfw = 0;
+	int stalls_fw = 0;
+	int clock_cycles_nfw = 4; // Execution time in clock cycles for no forwarding. Starts at 4 to prime the pipeline
+	int clock_cycles_fw = 4;  // Execution time in clock cycles for forwarding. Starts at 4 to prime the pipeline
+};	
 
 #endif
