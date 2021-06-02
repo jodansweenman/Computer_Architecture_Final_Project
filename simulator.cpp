@@ -60,6 +60,9 @@ int main(){
    memory_size = tempTrace.size();
    //cout << "Memory size: " << memory_size << "\n";
 
+   int hazards = 0;
+   int haz_mit = 0;
+
    // Execute instructions in order
    for(int i = 0; i < memory_size; i++)               
    {
@@ -87,25 +90,26 @@ int main(){
             stats.clock_cycles_nfw += 3;
             stats.clock_cycles_fw += 3;     
          }
-         // Check for RAW hazards in second previous instruction
-         else if(decodedTrace[i].source1 == pipeline[0].destination || decodedTrace[i].source2 == pipeline[0].destination){
-            // If not using forwarding add 1 stall cycle. Will take 2 clock cycles total
-            stats.stalls_nfw += 1;
-            stats.clock_cycles_nfw += 2;
-            // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
-            stats.clock_cycles_fw += 1;
-         }
          // Check for RAW hazards in previous instructions
          else if(decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination){
-
+            hazards += 1;
             // Instruction after a load is a special case since there is still a stall with forwarding
             if (pipeline[1].int_opcode == 12) {
-               // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
-               stats.stalls_nfw += 2;
-               stats.clock_cycles_nfw += 3;
-               // If using forwarding, need to add 1 stall cycle. Will take 2 clock cycle total
+               // If not using forwarding, add 1 stall cycles. Will take 2 clock cycles total
+               stats.stalls_nfw += 1;
+               stats.clock_cycles_nfw += 2;
+               // If using forwarding, still need to add 1 stall cycle. Will take 2 clock cycle total
                stats.stalls_fw += 1;
                stats.clock_cycles_fw += 2;
+            }
+            // Check for RAW hazards in second previous instruction
+            else if(decodedTrace[i].source1 == pipeline[0].destination || decodedTrace[i].source2 == pipeline[0].destination){
+               // If not using forwarding add 1 stall cycle. Will take 2 clock cycles total
+               stats.stalls_nfw += 1;
+               stats.clock_cycles_nfw += 2;
+               // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
+               stats.clock_cycles_fw += 1;
+               haz_mit += 1;
             }
             else {
                // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
@@ -113,6 +117,7 @@ int main(){
                stats.clock_cycles_nfw += 3;
                // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
                stats.clock_cycles_fw += 1;
+               haz_mit += 1;
             }
          }
          // No hazard
@@ -133,6 +138,8 @@ int main(){
             cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
             cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
             cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
+            cout << "Hazards without Forwarding: " << hazards << endl;
+            cout << "Hazards with Forwarding enabled: " << hazards  - haz_mit << endl;
             exit(0);
          }
       }
