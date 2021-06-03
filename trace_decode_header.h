@@ -17,16 +17,17 @@ class Instruction_decoder
 		string r_type[6] = {"Add", "Sub", "Mul", "Or", "And", "Xor"};
 		
 		string cur_opcode = "111111";
-		long long int int_opcode = 0;
-		long long int reg_rs = 0;
-		long long int reg_rt = 0;
-		long long int reg_rd = 0;
+		int int_opcode = 0;
+		int reg_rs = 0;
+		int reg_rt = 0;
+		int reg_rd = 0;
 		int immediate = 0;
-		long long int source1 = 0;		// Source register to be used by pipeline
-		long long int source2 = 0;		// Second source register to be used by pipeline
-		long long int destination = 0;	// Destination register to be used by pipeline
-		long long int x_addr = 0;			// Address in memory
-		long long int entire_value = 0;	// Unaltered read in value
+		string string_immediate = 0;
+		int source1 = 0;		// Source register to be used by pipeline
+		int source2 = 0;		// Second source register to be used by pipeline
+		int destination = 0;	// Destination register to be used by pipeline
+		int x_addr = 0;			// Address in memory
+		int entire_value = 0;	// Unaltered read in value
 		bool branch_taken = false;	
 		string type = "U";
 
@@ -34,7 +35,6 @@ class Instruction_decoder
 		int decode(string);
         void functional_simulator(long long int *registers, struct statistics *stats, Instruction_decoder *memory, int memory_size);
 		void print_results(long long int *registers, struct statistics *stats);	
-		signed long long int f(long long x);
 			
 };
 
