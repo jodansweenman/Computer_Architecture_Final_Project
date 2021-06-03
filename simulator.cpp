@@ -126,9 +126,8 @@ int main(){
          // If branch is taken or if it is a jump instruction, 3 clock cycles total
          if(decodedTrace[i].int_opcode == 16 || decodedTrace[i].branch_taken){
             stats.clock_cycles_nfw += 3;
-            stats.stalls_fw += 2;
             stats.clock_cycles_fw += 3;
-            stats.stalls_fw += 2;    
+            // Add two stalls for both nfw and fw     
          }
          // Check for RAW hazards in previous instructions
          else if(decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination){
