@@ -76,9 +76,23 @@ int main(){
          cout << " Immediate: " << decodedTrace[i].immediate; 
          cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
          */
+
          decodedTrace[i].functional_simulator(registers, &stats, decodedTrace, memory_size);
          stats.pc += 4;
          stats.instruction_count += 1; // Keep track of number of instructions executed
+
+         // Check if we hit "HALT" instruction
+         if(decodedTrace[i].int_opcode == 17){
+            cout << "Final Results\n";
+            decodedTrace[i].print_results(registers, &stats);
+            cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+            cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
+            cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
+            cout << "Hazards without Forwarding: " << hazards << endl;
+            cout << "Hazards with Forwarding enabled: " << hazards  - haz_mit << endl;
+            exit(0);
+         }
+
 
          // Determine how many clock cycles the instruction will take to complete
          // Put current instruction in the pipeline
@@ -131,17 +145,7 @@ int main(){
             pipeline.pop_front();
          }
 
-         // Check if we hit "HALT" instruction
-         if(decodedTrace[i].int_opcode == 17){
-            cout << "Final Results\n";
-            decodedTrace[i].print_results(registers, &stats);
-            cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-            cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
-            cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
-            cout << "Hazards without Forwarding: " << hazards << endl;
-            cout << "Hazards with Forwarding enabled: " << hazards  - haz_mit << endl;
-            exit(0);
-         }
+       
       }
       // Need to find the instruction to execute next
       else{
