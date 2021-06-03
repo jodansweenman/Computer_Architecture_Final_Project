@@ -7,7 +7,7 @@
 
 // Functional simulator (Different action based on opcode)
 // Keeps track of register and memory state changes
-void Instruction_decoder::functional_simulator(int registers[], struct statistics *stats, Instruction_decoder memory[], int memory_size) {
+void Instruction_decoder::functional_simulator(long long int registers[], struct statistics *stats, Instruction_decoder memory[], int memory_size) {
 
     int effective_address = 0;
 
@@ -109,7 +109,8 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         // LDW Rd Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
             stats->memory += 1;
-            effective_address = registers[reg_rs] + immediate;
+            effective_address = (registers[reg_rs]) + immediate;
+            cout << "effective address in load word is: " << effective_address <<"\n";
             for(int i = 0; i < memory_size; i++) {
                 if(effective_address == memory[i].x_addr){
                     registers[reg_rt] = memory[i].entire_value;
@@ -133,6 +134,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             stats->control += 1;
             branch_taken = false;
+            cout << "In BZ. The contents of Rs is: "<<registers[reg_rs]<<"\n";
             if(registers[reg_rs] == 0){
                 stats->pc = stats->pc + (immediate * 4) - 4;
                 branch_taken = true;
@@ -151,7 +153,11 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         case 16: //010000
         // JR Rs (Load the PC with the contents of register Rs. Jump to the new PC)
             stats->control += 1;
-            stats->pc = registers[reg_rs] - 4;
+            //stats->pc = registers[reg_rs] - 4;
+            stats->pc = registers[reg_rs];
+            cout << "in JR, reg_rs is: " << reg_rs << "\n";
+            cout << "The PC we should be jumping to next (contents of reg_rs): "<< registers[reg_rs] << "\n";
+            
             break;
         case 17: //010001
         // HALT (Stop executing the program)
@@ -160,7 +166,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
     }
 }
 
-void Instruction_decoder::print_results(int registers[], struct statistics *stats) {
+void Instruction_decoder::print_results(long long int registers[], struct statistics *stats) {
     
     cout << "Program counter: " << stats->pc << "\n";
     cout << "Total number of instructions: " << stats->instruction_count << "\n";
@@ -174,6 +180,6 @@ void Instruction_decoder::print_results(int registers[], struct statistics *stat
     cout << "Total stalls with forwarding: " << stats->stalls_fw << "\n";
     for(int i = 0; i < 32; i++)
     {
-        //cout << "Register "<< i << " : " <<  registers[i] << "\n";    
+        cout << "Register "<< i << " : " <<  registers[i] << "\n";    
     }
 }
