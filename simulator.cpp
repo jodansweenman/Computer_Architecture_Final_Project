@@ -53,6 +53,7 @@ int main(){
    {
         //cout << tempTrace.at(i) << "\n";
         decodedTrace[i].decode(tempTrace.at(i));
+        //cout << "How far " << i << "\n";
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
    }
@@ -76,9 +77,10 @@ int main(){
          cout << " Immediate: " << decodedTrace[i].immediate; 
          cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
          */
-
-         decodedTrace[i].functional_simulator(registers, &stats, decodedTrace, memory_size);
+         
          stats.pc += 4;
+         decodedTrace[i].functional_simulator(registers, &stats, decodedTrace, memory_size);
+         
          stats.instruction_count += 1; // Keep track of number of instructions executed
 
          // Check if we hit "HALT" instruction
@@ -101,7 +103,9 @@ int main(){
          // Check for mispredicted branches. Assume an always-not-taken branch prediction
          // If branch is taken or if it is a jump instruction, 3 clock cycles total
          if(decodedTrace[i].int_opcode == 16 || decodedTrace[i].branch_taken){
+            //stats.stalls_nfw += 2;
             stats.clock_cycles_nfw += 3;
+            //stats.stalls_fw += 2;
             stats.clock_cycles_fw += 3;     
          }
          // Check for RAW hazards in previous instructions

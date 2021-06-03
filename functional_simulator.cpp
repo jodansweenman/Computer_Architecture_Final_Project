@@ -151,7 +151,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         case 16: //010000
         // JR Rs (Load the PC with the contents of register Rs. Jump to the new PC)
             stats->control += 1;
-            stats->pc = registers[reg_rs] - 4;
+            stats->pc = registers[reg_rs];
             break;
         case 17: //010001
         // HALT (Stop executing the program)
@@ -174,6 +174,6 @@ void Instruction_decoder::print_results(int registers[], struct statistics *stat
     cout << "Total stalls with forwarding: " << stats->stalls_fw << "\n";
     for(int i = 0; i < 32; i++)
     {
-        //cout << "Register "<< i << " : " <<  registers[i] << "\n";    
+        cout << "Register "<< i << " : " <<  registers[i] << "\n";    
     }
 }

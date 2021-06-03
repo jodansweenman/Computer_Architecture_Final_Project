@@ -19,6 +19,11 @@
 
 using namespace std;
 
+#define BITSIZE 16
+#define SIGNFLAG (1<<(BITSIZE-1))
+#define DATABITS (SIGNFLAG-1)
+
+
 map <string, string> opcode_dict = {{"000000","Add"},
 											{"000001","Addi"},
 											{"000010","Sub"},
@@ -62,7 +67,7 @@ int Instruction_decoder::decode(string hex_inst) {
 	int_opcode = stoi(opcode,nullptr,2);
 
 	// Save whole read in line to be used as memory
-	entire_value = stoi(bin_inst,nullptr,2);
+	entire_value = stoll(bin_inst,nullptr,2);
 	
 	if (opcode_dict.count(opcode) > 0)
 	{
@@ -82,7 +87,16 @@ int Instruction_decoder::decode(string hex_inst) {
 			type = "I";
 			reg_rs = stoi(bin_inst.substr(6,5),nullptr,2);
 			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
-			immediate = stoi(bin_inst.substr(16,16),nullptr,2);
+
+			if(bin_inst.substr(16,1) == "1"){
+				immediate = stoll(bin_inst.substr(17,15),nullptr,2);
+				immediate = (~immediate & DATABITS) + 1;
+				immediate = -immediate;
+			}
+			else{
+				immediate = stoll(bin_inst.substr(17,15),nullptr,2);
+			}
+			
 		}
 	}
 	return 0;
