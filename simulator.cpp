@@ -19,7 +19,7 @@
 
 using namespace std;
                        
-long long int registers[32];                     // General purpose registers R0 - R31
+int registers[32];                     // General purpose registers R0 - R31
 Instruction_decoder decodedTrace[1024];// Array of decoded instructions
 int instruction_count = 0;             // Total number of instructions executed
 deque<Instruction_decoder> pipeline;   //Holds current instructions in the pipeline
@@ -55,19 +55,8 @@ int main(){
         decodedTrace[i].decode(tempTrace.at(i));
         decodedTrace[i].x_addr = tempAddress;
         tempAddress += 4;
-        
    }
-/*
-   for(int i = 0; i <30; i++){
-          cout << " Opcode: " << decodedTrace[i].cur_opcode;
-         cout << " Rs: " << decodedTrace[i].reg_rs;
-         cout << " Rt: " << decodedTrace[i].reg_rt;
-         cout << " Rd: " << decodedTrace[i].reg_rd;
-         cout << " Immediate: " << decodedTrace[i].immediate; 
-         cout << " x_addr: " << decodedTrace[i].x_addr;
-         cout << " Entire trace is: " << hex <<decodedTrace[i].entire_value << "\n";
-   }
-*/
+
    memory_size = tempTrace.size();
    //cout << "Memory size: " << memory_size << "\n";
 
@@ -77,33 +66,20 @@ int main(){
    // Execute instructions in order
    for(int i = 0; i < memory_size; i++)               
    {
-      /*
-      if( i < 30){
-         cout << " Opcode: " << decodedTrace[i].cur_opcode;
-         cout << " Rs: " << decodedTrace[i].reg_rs;
-         cout << " Rt: " << decodedTrace[i].reg_rt;
-         cout << " Rd: " << decodedTrace[i].reg_rd;
-         cout << " Immediate: " << decodedTrace[i].immediate; 
-         cout << " x_addr: " << decodedTrace[i].x_addr;
-         cout << " Entire trace is: " << hex <<decodedTrace[i].entire_value << "\n";
-      }
-      */
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
       if(stats.pc == decodedTrace[i].x_addr){
-         //cout << "In the PC is the next instruction \n";
-         
+         /*
          cout << " Opcode: " << decodedTrace[i].cur_opcode;
          cout << " Rs: " << decodedTrace[i].reg_rs;
          cout << " Rt: " << decodedTrace[i].reg_rt;
          cout << " Rd: " << decodedTrace[i].reg_rd;
          cout << " Immediate: " << decodedTrace[i].immediate; 
          cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
-         
-         stats.pc += 4;
+         */
+
          decodedTrace[i].functional_simulator(registers, &stats, decodedTrace, memory_size);
-         //stats.pc += 4;
+         stats.pc += 4;
          stats.instruction_count += 1; // Keep track of number of instructions executed
-         cout << "Instruction count: " << stats.instruction_count << "\n";
 
          // Check if we hit "HALT" instruction
          if(decodedTrace[i].int_opcode == 17){
@@ -126,8 +102,7 @@ int main(){
          // If branch is taken or if it is a jump instruction, 3 clock cycles total
          if(decodedTrace[i].int_opcode == 16 || decodedTrace[i].branch_taken){
             stats.clock_cycles_nfw += 3;
-            stats.clock_cycles_fw += 3;
-            // Add two stalls for both nfw and fw     
+            stats.clock_cycles_fw += 3;     
          }
          // Check for RAW hazards in previous instructions
          else if(decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination){
