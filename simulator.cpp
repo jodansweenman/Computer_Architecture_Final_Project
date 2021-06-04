@@ -70,6 +70,7 @@ int main(){
    // Execute instructions in order
    for(int i = 0; i < memory_size; i++)               
    {
+      //cout << "We are looking for the address. The PC is: " << stats.pc << " i is equal to: " << i<< "\n";
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
       if(stats.pc == decodedTrace[i].x_addr){
          /*
@@ -112,7 +113,7 @@ int main(){
             cout << "There is a hazard in a previous instruction \n";
             // Instruction after a load is a special case since there is still a stall with forwarding
             if (pipeline[1].int_opcode == 12) {
-               cout << "That hazard was after a load \n";
+               //cout << "That hazard was after a load \n";
                after_load += 1;
                // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
                stats.stalls_nfw += 2;
@@ -134,12 +135,19 @@ int main(){
          // Check for RAW hazards in second previous instruction
          else if(decodedTrace[i].source1 == pipeline[0].destination || decodedTrace[i].source2 == pipeline[0].destination){
             cout << "There is a hazard in the second previous instruction \n";
-            // If not using forwarding add 1 stall cycle. Will take 2 clock cycles total
-            stats.stalls_nfw += 1;
-            stats.clock_cycles_nfw += 2;
-            // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
-            stats.clock_cycles_fw += 1;
-            haz_mit += 1;
+            // If the previous was not a jump. We already took care of the stalls for a jump. Don't add more.
+            if(pipeline[1].int_opcode != 16 ){
+               // If not using forwarding add 1 stall cycle. Will take 2 clock cycles total
+               stats.stalls_nfw += 1;
+               stats.clock_cycles_nfw += 2;
+               // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
+               stats.clock_cycles_fw += 1;
+               haz_mit += 1;
+            }
+            else{
+               stats.clock_cycles_nfw += 1;
+               stats.clock_cycles_fw += 1;
+            }
          }
          /*
             else {
@@ -154,7 +162,7 @@ int main(){
          
          // No hazard
          else {
-            if(n <= 25) cout << "No hazard \n";
+            if(n > 630) cout << "No hazard \n";
             stats.clock_cycles_nfw += 1;
             stats.clock_cycles_fw += 1;
          }
@@ -177,7 +185,20 @@ int main(){
          if(pipeline.size() >= 3){
             pipeline.pop_front();
          }
-
+         
+         if(n > 630){
+            cout << " Opcode: " << decodedTrace[i].cur_opcode;
+            cout << " Rs: " << decodedTrace[i].reg_rs;
+            cout << " Rt: " << decodedTrace[i].reg_rt;
+            cout << " Rd: " << decodedTrace[i].reg_rd;
+            cout << " Immediate: " << decodedTrace[i].immediate; 
+            cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
+            cout << "Bz branch taken is: " << decodedTrace[i].bz_branch_taken;
+            cout << "  Beq branch taken is: " << decodedTrace[i].beq_branch_taken << "\n";
+            cout << "Clock cycles without forwarding: " << stats.clock_cycles_nfw << "\n";
+            cout << "Total stalls without forwarding: " << stats.stalls_nfw << "\n\n";
+         }
+         n +=1;
        
       }
       // Need to find the instruction to execute next
@@ -187,25 +208,18 @@ int main(){
          for(int j = 0; j < memory_size; j++){
             if(stats.pc == decodedTrace[j].x_addr){
                // i will automatically increment so we need to subtract 1 from j so they are equal next time through the loop
+               
+               //cout << "We found the address we wanted. The PC is: " << stats.pc << " and j is equal to: " << j << " i is equal to: " << i<< "\n";
+               
                i = j-1;
-               break;
+               j = memory_size;
+               
             }
+            
          }
       }
 
-       if(n <= 25){
-            cout << " Opcode: " << decodedTrace[i].cur_opcode;
-            cout << " Rs: " << decodedTrace[i].reg_rs;
-            cout << " Rt: " << decodedTrace[i].reg_rt;
-            cout << " Rd: " << decodedTrace[i].reg_rd;
-            cout << " Immediate: " << decodedTrace[i].immediate; 
-            cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
-            cout << "Bz branch taken is: " << decodedTrace[i].bz_branch_taken << "\n";
-            cout << "Beq branch taken is: " << decodedTrace[i].beq_branch_taken << "\n";
-            cout << "Clock cycles without forwarding: " << stats.clock_cycles_nfw << "\n";
-            cout << "Total stalls without forwarding: " << stats.stalls_nfw << "\n\n";
-         }
-         n +=1;
+      
    }
 
    
