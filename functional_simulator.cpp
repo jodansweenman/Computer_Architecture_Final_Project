@@ -106,9 +106,11 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
             break;
     // Memory Access Instructions
         case 12: //001100
-        // LDW Rd Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
+        // LDW Rt Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // load the contents (32-bits) of the memory location at address "A" into reg Rt)
             stats->memory += 1;
+            source1 = reg_rs;
+            destination = reg_rt;
             effective_address = registers[reg_rs] + immediate;
             for(int i = 0; i < memory_size; i++) {
                 if(effective_address == memory[i].x_addr){
@@ -121,7 +123,8 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         // STW Rt Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // store the contents of reg Rt (32-bits) at the memory address "A")
             stats->memory += 1;
-            //cout << "Store word \n";
+            source1 = reg_rs;
+            destination = reg_rt;
             effective_address = registers[reg_rs] + immediate;
             for(int i = 0; i < memory_size; i++) {
                 if(effective_address == memory[i].x_addr){
@@ -133,27 +136,33 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         case 14: //001110
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             stats->control += 1;
-            branch_taken = false;
+            bz_branch_taken = false;
             source1 = reg_rs;
+    
             if(registers[reg_rs] == 0){
                 stats->pc = stats->pc + (immediate * 4) - 4;
-                branch_taken = true;
+                bz_branch_taken = true;
             }
+            
             break;
         case 15: //001111
         // BEQ Rs Rt x (Compare contents of reg Rs and Rt. If they are equal, branch to the 'x'th instruction from
         // the current instruction)
             stats->control += 1;
-            branch_taken = false;
+            beq_branch_taken = false;
+            source1 = reg_rs;
+            source2 = reg_rt;
             if(registers[reg_rs] == registers[reg_rt]){
                 stats->pc = stats->pc + (immediate * 4) - 4;       // Subtract 4 since PC is automatically incremented by 4 in main loop
-                branch_taken = true;
+                beq_branch_taken = true;
             }
             break;
         case 16: //010000
         // JR Rs (Load the PC with the contents of register Rs. Jump to the new PC)
             stats->control += 1;
+            source1 = reg_rs;
             stats->pc = registers[reg_rs];
+            cout << "The pc we want to jump to is: " << stats->pc << "\n";
             break;
         case 17: //010001
         // HALT (Stop executing the program)

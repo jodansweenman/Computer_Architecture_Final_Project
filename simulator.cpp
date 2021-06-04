@@ -66,20 +66,26 @@ int main(){
    int control_hazards = 0;
    int after_load = 0;
 
+   int n;
    // Execute instructions in order
    for(int i = 0; i < memory_size; i++)               
    {
       // Evaluate if PC is the next instruction or if we need to go to a different instruction
       if(stats.pc == decodedTrace[i].x_addr){
          /*
-         cout << " Opcode: " << decodedTrace[i].cur_opcode;
-         cout << " Rs: " << decodedTrace[i].reg_rs;
-         cout << " Rt: " << decodedTrace[i].reg_rt;
-         cout << " Rd: " << decodedTrace[i].reg_rd;
-         cout << " Immediate: " << decodedTrace[i].immediate; 
-         cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
+         if(n <= 25){
+            cout << " Opcode: " << decodedTrace[i].cur_opcode;
+            cout << " Rs: " << decodedTrace[i].reg_rs;
+            cout << " Rt: " << decodedTrace[i].reg_rt;
+            cout << " Rd: " << decodedTrace[i].reg_rd;
+            cout << " Immediate: " << decodedTrace[i].immediate; 
+            cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
+            cout << "Clock cycles without forwarding: " << stats.clock_cycles_nfw << "\n";
+            cout << "Total stalls without forwarding: " << stats.stalls_nfw << "\n\n";
+         }
+         n +=1;
          */
-         
+
          stats.pc += 4;
          decodedTrace[i].functional_simulator(registers, &stats, decodedTrace, memory_size);
          
@@ -92,37 +98,50 @@ int main(){
 
          // Check for mispredicted branches. Assume an always-not-taken branch prediction
          // If branch is taken or if it is a jump instruction, 3 clock cycles total
-         if(decodedTrace[i].int_opcode == 16 || decodedTrace[i].branch_taken){
+         if((pipeline.size() > 1 ) && (pipeline[2].int_opcode == 16 || pipeline[1].bz_branch_taken || pipeline[1].beq_branch_taken)){
             control_hazards += 1;
-            //stats.stalls_nfw += 2;
-            stats.clock_cycles_nfw += 3;
-            //stats.stalls_fw += 2;
-            stats.clock_cycles_fw += 3;     
+            cout << "A branch is taken or there was a jump \n";
+            //stats.clock_cycles_nfw += 3;
+            //stats.clock_cycles_fw += 3;
+            stats.clock_cycles_nfw += 2;
+            stats.clock_cycles_fw += 2;      
          }
          // Check for RAW hazards in previous instructions
-         else if(decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination){
+         if(decodedTrace[i].source1 == pipeline[1].destination || decodedTrace[i].source2 == pipeline[1].destination){
             hazards += 1;
+            cout << "There is a hazard in a previous instruction \n";
             // Instruction after a load is a special case since there is still a stall with forwarding
             if (pipeline[1].int_opcode == 12) {
+               cout << "That hazard was after a load \n";
                after_load += 1;
                // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
-               //stats.stalls_nfw += 1;
-               //stats.clock_cycles_nfw += 2;
                stats.stalls_nfw += 2;
                stats.clock_cycles_nfw += 3;
                // If using forwarding, still need to add 1 stall cycle. Will take 2 clock cycle total
                stats.stalls_fw += 1;
                stats.clock_cycles_fw += 2;
             }
-            // Check for RAW hazards in second previous instruction
-            else if(decodedTrace[i].source1 == pipeline[0].destination || decodedTrace[i].source2 == pipeline[0].destination){
-               // If not using forwarding add 1 stall cycle. Will take 2 clock cycles total
-               stats.stalls_nfw += 1;
-               stats.clock_cycles_nfw += 2;
+            else {
+               cout << "Was not after a load \n";
+               // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
+               stats.stalls_nfw += 2;
+               stats.clock_cycles_nfw += 3;
                // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
                stats.clock_cycles_fw += 1;
                haz_mit += 1;
             }
+         }
+         // Check for RAW hazards in second previous instruction
+         else if(decodedTrace[i].source1 == pipeline[0].destination || decodedTrace[i].source2 == pipeline[0].destination){
+            cout << "There is a hazard in the second previous instruction \n";
+            // If not using forwarding add 1 stall cycle. Will take 2 clock cycles total
+            stats.stalls_nfw += 1;
+            stats.clock_cycles_nfw += 2;
+            // If using forwarding, no need to add stall cycles. Will take 1 clock cycle total
+            stats.clock_cycles_fw += 1;
+            haz_mit += 1;
+         }
+         /*
             else {
                // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
                stats.stalls_nfw += 2;
@@ -131,9 +150,11 @@ int main(){
                stats.clock_cycles_fw += 1;
                haz_mit += 1;
             }
-         }
+            */
+         
          // No hazard
          else {
+            if(n <= 25) cout << "No hazard \n";
             stats.clock_cycles_nfw += 1;
             stats.clock_cycles_fw += 1;
          }
@@ -171,6 +192,20 @@ int main(){
             }
          }
       }
+
+       if(n <= 25){
+            cout << " Opcode: " << decodedTrace[i].cur_opcode;
+            cout << " Rs: " << decodedTrace[i].reg_rs;
+            cout << " Rt: " << decodedTrace[i].reg_rt;
+            cout << " Rd: " << decodedTrace[i].reg_rd;
+            cout << " Immediate: " << decodedTrace[i].immediate; 
+            cout << " x_addr: " << decodedTrace[i].x_addr << "\n";
+            cout << "Bz branch taken is: " << decodedTrace[i].bz_branch_taken << "\n";
+            cout << "Beq branch taken is: " << decodedTrace[i].beq_branch_taken << "\n";
+            cout << "Clock cycles without forwarding: " << stats.clock_cycles_nfw << "\n";
+            cout << "Total stalls without forwarding: " << stats.stalls_nfw << "\n\n";
+         }
+         n +=1;
    }
 
    

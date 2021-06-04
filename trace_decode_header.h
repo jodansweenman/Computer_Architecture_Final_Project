@@ -22,12 +22,13 @@ class Instruction_decoder
 		int reg_rt = 0;
 		int reg_rd = 0;
 		long long int immediate = 0;
-		int source1 = 0;		// Source register to be used by pipeline
-		int source2 = 0;		// Second source register to be used by pipeline
+		int source1 = 32;		// Source register to be used by pipeline (Default source and destination need to be different values in case they are both defaults)
+		int source2 = 32;		// Second source register to be used by pipeline
 		int destination = 0;	// Destination register to be used by pipeline
 		int x_addr = 0;			// Address in memory
 		long long int entire_value = 0;	// Unaltered read in value
-		bool branch_taken = false;	
+		bool bz_branch_taken = false;
+		bool beq_branch_taken = false;	
 		string type = "U";
 
 		Instruction_decoder(void);
