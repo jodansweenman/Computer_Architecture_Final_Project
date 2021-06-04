@@ -63,6 +63,8 @@ int main(){
 
    int hazards = 0;
    int haz_mit = 0;
+   int control_hazards = 0;
+   int after_load = 0;
 
    // Execute instructions in order
    for(int i = 0; i < memory_size; i++)               
@@ -83,18 +85,6 @@ int main(){
          
          stats.instruction_count += 1; // Keep track of number of instructions executed
 
-         // Check if we hit "HALT" instruction
-         if(decodedTrace[i].int_opcode == 17){
-            cout << "Final Results\n";
-            decodedTrace[i].print_results(registers, &stats);
-            cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
-            cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
-            cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
-            cout << "Hazards without Forwarding: " << hazards << endl;
-            cout << "Hazards with Forwarding enabled: " << hazards  - haz_mit << endl;
-            exit(0);
-         }
-
 
          // Determine how many clock cycles the instruction will take to complete
          // Put current instruction in the pipeline
@@ -103,6 +93,7 @@ int main(){
          // Check for mispredicted branches. Assume an always-not-taken branch prediction
          // If branch is taken or if it is a jump instruction, 3 clock cycles total
          if(decodedTrace[i].int_opcode == 16 || decodedTrace[i].branch_taken){
+            control_hazards += 1;
             //stats.stalls_nfw += 2;
             stats.clock_cycles_nfw += 3;
             //stats.stalls_fw += 2;
@@ -113,9 +104,12 @@ int main(){
             hazards += 1;
             // Instruction after a load is a special case since there is still a stall with forwarding
             if (pipeline[1].int_opcode == 12) {
-               // If not using forwarding, add 1 stall cycles. Will take 2 clock cycles total
-               stats.stalls_nfw += 1;
-               stats.clock_cycles_nfw += 2;
+               after_load += 1;
+               // If not using forwarding, add 2 stall cycles. Will take 3 clock cycles total
+               //stats.stalls_nfw += 1;
+               //stats.clock_cycles_nfw += 2;
+               stats.stalls_nfw += 2;
+               stats.clock_cycles_nfw += 3;
                // If using forwarding, still need to add 1 stall cycle. Will take 2 clock cycle total
                stats.stalls_fw += 1;
                stats.clock_cycles_fw += 2;
@@ -142,6 +136,20 @@ int main(){
          else {
             stats.clock_cycles_nfw += 1;
             stats.clock_cycles_fw += 1;
+         }
+         
+         // Check if we hit "HALT" instruction
+         if(decodedTrace[i].int_opcode == 17){
+            //cout << "Final Results\n";
+            decodedTrace[i].print_results(registers, &stats);
+            //cout << "Address: " << decodedTrace[350].x_addr << ", Contents: " << decodedTrace[350].entire_value << "\n";
+            //cout << "Address: " << decodedTrace[351].x_addr << ", Contents: " << decodedTrace[351].entire_value << "\n";
+            //cout << "Address: " << decodedTrace[352].x_addr << ", Contents: " << decodedTrace[352].entire_value << "\n";
+            //cout << "Data Hazards without Forwarding: " << hazards << endl;
+            //cout << "Data Hazards with Forwarding enabled: " << hazards  - haz_mit << endl;
+            //cout << "Number of after load hazards: " << after_load << endl;
+            //cout << "Control hazards: " << control_hazards << endl;
+            exit(0);
          }
 
          //If queue has reached the limit, remove oldest item

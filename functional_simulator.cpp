@@ -121,6 +121,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         // STW Rt Rs Imm (Add the contents of Rs and the immediate value to generate the effective address "A",
         // store the contents of reg Rt (32-bits) at the memory address "A")
             stats->memory += 1;
+            //cout << "Store word \n";
             effective_address = registers[reg_rs] + immediate;
             for(int i = 0; i < memory_size; i++) {
                 if(effective_address == memory[i].x_addr){
@@ -133,6 +134,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
         // BZ Rs x (If the contents of Rs is zero, then branch to the 'x'th instruction from the current instruction)
             stats->control += 1;
             branch_taken = false;
+            source1 = reg_rs;
             if(registers[reg_rs] == 0){
                 stats->pc = stats->pc + (immediate * 4) - 4;
                 branch_taken = true;
@@ -174,6 +176,6 @@ void Instruction_decoder::print_results(int registers[], struct statistics *stat
     cout << "Total stalls with forwarding: " << stats->stalls_fw << "\n";
     for(int i = 0; i < 32; i++)
     {
-        cout << "Register "<< i << " : " <<  registers[i] << "\n";    
+        //cout << "Register "<< i << " : " <<  registers[i] << "\n";    
     }
 }
