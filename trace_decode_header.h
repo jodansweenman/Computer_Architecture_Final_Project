@@ -1,3 +1,14 @@
+/**************************************************************************************
+* trace_decode_header.h
+*
+* Project Team: Michael Ruehle, Tiffani Shilts, Anusha Sistla, Josiah Sweeney, and Brett Thornhill
+* Class: ECE 586
+* Project: Final Project
+* Term: Spring 2021
+*
+* This file contains a header for simulator.cpp, functional_simulator.cpp, and instructor_decode.cpp 
+*
+***************************************************************************************/
 #include <string>
 #include <map>
 

@@ -3,6 +3,7 @@
 *
 * Project Team: Michael Ruehle, Tiffani Shilts, Anusha Sistla, Josiah Sweeney, and Brett Thornhill
 * Class: ECE 586
+* Project: Final Project
 * Term: Spring 2021
 *
 * This file contains the source code for a class that defines an instruction.
@@ -24,7 +25,7 @@ using namespace std;
 #define DATABITS (SIGNFLAG-1)
 
 
-map <string, string> opcode_dict = {{"000000","Add"},
+map <string, string> opcode_dict =         {{"000000","Add"},
 											{"000001","Addi"},
 											{"000010","Sub"},
 											{"000011","Subi"},
@@ -42,7 +43,7 @@ map <string, string> opcode_dict = {{"000000","Add"},
 											{"001111","Beq"},
 											{"010000","Jr"},
 											{"010001","Halt"},
-		};
+		                                                    };
 
 // This function works as a class constructor that takes in the hexidecimal input
 Instruction_decoder::Instruction_decoder(void)
@@ -50,8 +51,8 @@ Instruction_decoder::Instruction_decoder(void)
 }
 
 // This function decodes the hex input
-int Instruction_decoder::decode(string hex_inst) {
-
+int Instruction_decoder::decode(string hex_inst)
+{
 	// Convert string input into hex
 	stringstream ss;
 	ss << hex << hex_inst;
@@ -74,7 +75,8 @@ int Instruction_decoder::decode(string hex_inst) {
 		// In the 'R' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, Rd = 5, and the rest of the instruction is unused
 		// [31-26] Opcode, [25-21] Rs, [20-16]Rt, [15-11]Rd, [10-0] Unused
 		cur_opcode = opcode_dict[opcode];	
-		if(find(r_type,r_type+6, cur_opcode) != r_type+6){
+		if(find(r_type,r_type+6, cur_opcode) != r_type+6)
+		{
 			type = "R";
 			reg_rs = stoi(bin_inst.substr(6,5),nullptr,2);
 			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
@@ -83,21 +85,24 @@ int Instruction_decoder::decode(string hex_inst) {
 		
 		// // In the 'I' Case of an instruction, the opcode = 6, Rs = 5, Rt = 5, and Immediate = 16
 		// [31-26] Opcode, [25-21]Rs, [20-16]Rt, [15-0] Immediate
-		else{
+		else
+		{
 			type = "I";
 			reg_rs = stoi(bin_inst.substr(6,5),nullptr,2);
 			reg_rt = stoi(bin_inst.substr(11,5),nullptr,2);
 
-			if(bin_inst.substr(16,1) == "1"){
+			if(bin_inst.substr(16,1) == "1")
+			{
 				immediate = stoll(bin_inst.substr(17,15),nullptr,2);
 				immediate = (~immediate & DATABITS) + 1;
 				immediate = -immediate;
 			}
-			else{
+			
+			else
+			{
 				immediate = stoll(bin_inst.substr(17,15),nullptr,2);
 			}
-			
 		}
 	}
-	return 0;
+    return 0;
 }
