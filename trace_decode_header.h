@@ -6,7 +6,7 @@
 * Project: Final Project
 * Term: Spring 2021
 *
-* This file contains a header for simulator.cpp, functional_simulator.cpp, and instructor_decode.cpp 
+* This file contains a header for simulator.cpp, functional_simulator.cpp, and instructor_decode.cpp
 *
 ***************************************************************************************/
 #include <string>
@@ -18,15 +18,15 @@ using namespace std;
 
 #define TRACE_DECODE_HEADER_H
 
-// This class defines an instruction. It stores different attributes of the function and has a decode function which 
+// This class defines an instruction. It stores different attributes of the function and has a decode function which
 // can be used to decode different parts of the hexidecimal input
 class Instruction_decoder
 {
 	public:
 		string hex_inst;
-		
+
 		string r_type[6] = {"Add", "Sub", "Mul", "Or", "And", "Xor"};
-		
+
 		string cur_opcode = "111111";
 		int int_opcode = 0;
 		int reg_rs = 0;
@@ -39,14 +39,14 @@ class Instruction_decoder
 		int x_addr = 0;			// Address in memory
 		long long int entire_value = 0;	// Unaltered read in value
 		bool bz_branch_taken = false;
-		bool beq_branch_taken = false;	
+		bool beq_branch_taken = false;
 		string type = "U";
 
 		Instruction_decoder(void);
 		int decode(string);
         void functional_simulator(int *registers, struct statistics *stats, Instruction_decoder *memory, int memory_size);
-		void print_results(int *registers, struct statistics *stats);	
-			
+		void print_results(int *registers, struct statistics *stats);
+
 };
 
 class traceInstruction
@@ -57,7 +57,7 @@ class traceInstruction
     // data members
     string trace;
     int address;
-}; 
+};
 
 struct statistics
 {
@@ -71,6 +71,8 @@ struct statistics
 	int stalls_fw = 0;
 	int clock_cycles_nfw = 4; // Execution time in clock cycles for no forwarding. Starts at 4 to prime the pipeline
 	int clock_cycles_fw = 4;  // Execution time in clock cycles for forwarding. Starts at 4 to prime the pipeline
-};	
+	int data_hazards = 0;
+	int haz_mit = 0;
+};
 
 #endif

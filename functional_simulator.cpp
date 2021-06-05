@@ -23,7 +23,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
     int effective_address = 0;
 
     switch(int_opcode){
-    
+
     // Arithmetic Instructions
 
         case 0: //000000
@@ -174,7 +174,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
             stats->control += 1;
             bz_branch_taken = false;
             source1 = reg_rs;
-    
+
             if(registers[reg_rs] == 0)
             {
                 stats->pc = stats->pc + (immediate * 4) - 4;
@@ -193,7 +193,7 @@ void Instruction_decoder::functional_simulator(int registers[], struct statistic
             if(registers[reg_rs] == registers[reg_rt])
             {
                 // Subtract 4 since PC is automatically incremented by 4 in main loop
-                stats->pc = stats->pc + (immediate * 4) - 4;       
+                stats->pc = stats->pc + (immediate * 4) - 4;
                 beq_branch_taken = true;
             }
             break;
@@ -225,11 +225,14 @@ void Instruction_decoder::print_results(int registers[], struct statistics *stat
     cout << "Total stalls without forwarding: " << stats->stalls_nfw << "\n\n";
     cout << "Clock cycles with forwarding: " << stats->clock_cycles_fw << "\n";
     cout << "Total stalls with forwarding: " << stats->stalls_fw << "\n\n";
+    cout << "Data Hazards without Forwarding: " << stats->data_hazards << endl;
+    cout << "Average Stall Penalty: " << float(stats->stalls_nfw)/float(stats->data_hazards) << "\n" << endl;
+    cout << "Data Hazards with Forwarding: " << stats->data_hazards - stats->haz_mit << "\n" << endl;
 
     for(int i = 0; i < 32; i++)
     {
-        cout << "Register "<< i << " : " <<  registers[i] << "\n";    
+        cout << "Register "<< i << " : " <<  registers[i] << "\n";
     }
-    
+
     cout << "\n";
 }
